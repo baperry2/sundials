@@ -2454,6 +2454,7 @@ static int CopyReductionBufferFromDevice(N_Vector v, size_t n)
 static int InitializeDeviceCounter(N_Vector v)
 {
   int retval = 0;
+  hipError_t cuerr;
   /* AMD hardware does not seem to like atomicInc on pinned memory, so use device memory. */
   if (NVEC_HIP_PRIVATE(v)->device_counter == NULL)
   {
@@ -2461,7 +2462,7 @@ static int InitializeDeviceCounter(N_Vector v)
                                    &(NVEC_HIP_PRIVATE(v)->device_counter), sizeof(unsigned int),
                                    SUNMEMTYPE_DEVICE, (void*) NVEC_HIP_STREAM(v));
   }
-  hipMemsetAsync(NVEC_HIP_DCOUNTERp(v), 0, sizeof(unsigned int), *NVEC_HIP_STREAM(v));
+  cuerr = hipMemsetAsync(NVEC_HIP_DCOUNTERp(v), 0, sizeof(unsigned int), *NVEC_HIP_STREAM(v));
   return retval;
 }
 
